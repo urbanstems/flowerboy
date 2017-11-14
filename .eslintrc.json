@@ -1,0 +1,45 @@
+{
+  "extends": "airbnb",
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "rules": {
+    "react/jsx-filename-extension": 0,
+    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+    "id-length": 0,
+    "react/no-multi-comp": 0,
+    "react/jsx-uses-react": 2,
+    "react/jsx-uses-vars": 2,
+    "react/react-in-jsx-scope": 2,
+    "new-cap": ["error", {
+      "newIsCap": true,
+      "capIsNew": false
+    }],
+    "no-console": 0,
+    "indent": ["error", 2, {
+      "SwitchCase": 1,
+      "MemberExpression": 1
+    }],
+    "no-use-before-define": ["error", { "functions": false, "classes": false }],
+    "comma-dangle": ["error", {
+    "arrays": "always-multiline",
+    "objects": "always-multiline",
+    "imports": "always-multiline",
+    "exports": "always-multiline",
+    "functions": "ignore"
+    }]
+  },
+  "plugins": [
+    "react"
+  ],
+  "globals": {
+    "__PRODUCTION__": true,
+    "__DEVELOPMENT__": true,
+    "__STAGING__": true,
+    "__CLIENT__": true,
+    "__SERVER__": true,
+    "__DEVTOOLS__": true,
+    "__DISABLE_SSR__": true
+  }
+}

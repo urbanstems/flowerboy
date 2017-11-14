@@ -5,19 +5,18 @@ const game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-example', {
 });
 
 let player;
-let houses; // ref. aliens
-let flowers; // ref. bullets = flowers
+let houses;
+let flowers;
 let flowerTime = 0;
 let cursors;
 let fireLeftKey;
 let fireRightKey;
-let deliveries; // ref. explosions = deliveries
+let deliveries;
 let road;
 let score = 0;
 let scoreString = '';
 let scoreText;
 let lives;
-let live;
 let stateText;
 let deliveredBouquet;
 let flowerLeft;
@@ -25,11 +24,10 @@ let flowerRight;
 
 function preload() {
   game.load.image('flower', 'assets/games/flowerboy/flower.png');
-  game.load.spritesheet('house', 'assets/games/flowerboy/house32x32x4.png', 32, 32);
+  game.load.spritesheet('house', 'assets/games/flowerboy/house140x140.png', 140, 140);
   game.load.image('car', 'assets/games/flowerboy/player.png');
   game.load.spritesheet('kaboom', 'assets/games/flowerboy/explode.png');
   game.load.image('road', 'assets/games/flowerboy/road.png');
-  game.load.image('background', 'assets/games/starstruck/background2.png');
 }
 
 function create() {
@@ -48,11 +46,6 @@ function create() {
   flowers.setAll('outOfBoundsKill', true);
   flowers.setAll('checkWorldBounds', true);
 
-  // the player
-  player = game.add.sprite(400, 500, 'car');
-  player.anchor.setTo(0.5, 0.5);
-  game.physics.enable(player, Phaser.Physics.ARCADE);
-
   // creates a group of houses which will serve as targets
   houses = game.add.group();
   houses.enableBody = true;
@@ -60,16 +53,21 @@ function create() {
 
   createHouses();
 
+  // the player
+  player = game.add.sprite(400, 500, 'car');
+  player.anchor.setTo(0.5, 0.5);
+  game.physics.enable(player, Phaser.Physics.ARCADE);
+
   // the score
   scoreString = 'Score : ';
-  scoreText = game.add.text(10, 10, scoreString + score, { font: '14px Arial', fill: '#fff' });
+  scoreText = game.add.text(10, 10, scoreString + score, { font: '20px Arial', fill: '#fff' });
 
   // player lives
   lives = game.add.group();
-  game.add.text(game.world.width - 100, 10, 'Lives : ', { font: '14px Arial', fill: '#fff' });
+  game.add.text(game.world.width - 100, 10, 'Lives : ', { font: '20px Arial', fill: '#fff' });
 
   // text
-  stateText = game.add.text(game.world.centerX, game.world.centerY, ' ', { font: '84px Arial', fill: '#fff' });
+  stateText = game.add.text(game.world.centerX, game.world.centerY, ' ', { font: '34px Arial', fill: '#fff' });
   stateText.anchor.setTo(0.5, 0.5);
   stateText.visible = false;
 
@@ -85,13 +83,13 @@ function create() {
 }
 
 function createHouses() {
-  const house = houses.create(100, 0, 'house');
+  const house = houses.create(20, 0, 'house');
   house.body.moves = false;
 
   // start the moving the house group
   const tween = game.add.tween(houses).to(
-    { y: 800 }, 10000,
-    Phaser.Easing.Linear.None, true, 0, 2, false
+    { y: 800 }, 6000,
+    Phaser.Easing.Linear.None, true, 0, 10, false
   );
 }
 
@@ -113,6 +111,10 @@ function update() {
       player.body.velocity.x = -200;
     } else if (cursors.right.isDown) {
       player.body.velocity.x = 200;
+    } else if (cursors.up.isDown) {
+      player.body.velocity.y = -90;
+    } else if (cursors.down.isDown) {
+      player.body.velocity.y = 90;
     }
 
     // firing bouquet
@@ -129,16 +131,12 @@ function update() {
 }
 
 function render() {
-
-  // for (var i = 0; i < aliens.length; i++)
-  // {
-  //     game.debug.body(aliens.children[i]);
+  // for (let i = 0; i < houses.length; i++) {
+  //   game.debug.body(houses.children[i]);
   // }
-
 }
 
 function collisionHandler(house, flower) {
-  // when flower hits a house we kill them both. want to change this to show 'happiness delivered'
   flower.kill();
   house.kill();
 
@@ -163,32 +161,22 @@ function collisionHandler(house, flower) {
   }
 }
 
-function enemyHitsPlayer(flower) {
-  flower.kill();
+const delivery = deliveredBouquet.getFirstExists(false);
+delivery.reset(player.body.x, player.body.y);
+delivery.play('kaboom', 30, false, true);
 
-  live = lives.getFirstAlive();
+if (lives.countLiving() < 1) {
+  player.kill();
 
-  if (live) {
-    live.kill();
-  }
+  stateText.text = ' GAME OVER \n Click to restart';
+  stateText.visible = true;
 
-  const delivery = deliveredBouquet.getFirstExists(false);
-  delivery.reset(player.body.x, player.body.y);
-  delivery.play('kaboom', 30, false, true);
-
-  if (lives.countLiving() < 1) {
-    player.kill();
-
-    stateText.text = ' GAME OVER \n Click to restart';
-    stateText.visible = true;
-
-    // the 'click to restart' handler
-    game.input.onTap.addOnce(restart, this);
-  }
+  // the 'click to restart' handler
+  game.input.onTap.addOnce(restart, this);
 }
 
 function fireBouquet(position) {
-  // set a time limite for the flowers to fire
+  // set a time limit for the flowers to fire
   if (game.time.now > flowerTime) {
     // grab the first flower from the pool
     flowerLeft = flowers.getFirstExists(false);
@@ -211,8 +199,7 @@ function fireBouquet(position) {
 }
 
 function restart() {
-  // a new level starts
-  // resets the life count
+  // a new level starts and resets the life count
   lives.callAll('revive');
   // and brings the houses back
   houses.removeAll();
