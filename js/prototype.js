@@ -1,4 +1,5 @@
 /* global Phaser */
+/* eslint-disable no-param-reassign */
 
 const game = new Phaser.Game(800, 600, Phaser.AUTO, 'phaser-example', {
   preload, create, update, render,
@@ -23,7 +24,7 @@ let flowerRight;
 
 function preload() {
   game.load.image('flower', 'assets/games/flowerboy/flower.png');
-  game.load.spritesheet('house', 'assets/games/flowerboy/house140x140.png', 140, 140);
+  game.load.spritesheet('house', 'assets/games/flowerboy/house140x140x2.png', 140, 140);
   game.load.image('car', 'assets/games/flowerboy/player.png');
   game.load.spritesheet('kaboom', 'assets/games/flowerboy/explode.png');
   game.load.image('road', 'assets/games/flowerboy/road.png');
@@ -77,7 +78,7 @@ function create() {
 
   cursors = game.input.keyboard.createCursorKeys();
   fireLeftKey = game.input.keyboard.addKey(Phaser.Keyboard.A);
-  fireRightKey = game.input.keyboard.addKey(Phaser.Keyboard.D);
+  fireRightKey = game.input.keyboard.addKey(Phaser.Keyboard.S);
 }
 
 function createHouses() {
@@ -99,9 +100,8 @@ function createHouses() {
 }
 
 function setupHouse(house) {
-  house.anchor.x = 0.5;
+  house.anchorx = 0.5;
   house.anchor.y = 0.5;
-  // house.animations.add('kaboom');
 }
 
 function update() {
@@ -139,6 +139,11 @@ function collisionHandler(house, flower) {
   flower.kill();
   house.kill();
 
+  // Possible solution for changing the sprites on collision
+  // game.load.spritesheet('character', 'character.png', 60, 60);
+  // let character = game.add.sprite(0, 0, 'character');character.frame = 0;
+  // Character idle imagecharacter.frame = 1; //Character jump image
+
   score += 20;
   scoreText.text = scoreString + score;
 
@@ -155,19 +160,6 @@ function collisionHandler(house, flower) {
 
     game.input.onTap.addOnce(restart, this);
   }
-}
-
-const delivery = deliveries.getFirstExists(false);
-delivery.reset(player.body.x, player.body.y);
-delivery.play('kaboom', 30, false, true);
-
-if (lives.countLiving() < 1) {
-  player.kill();
-
-  stateText.text = ' GAME OVER \n Click to restart';
-  stateText.visible = true;
-
-  game.input.onTap.addOnce(restart, this);
 }
 
 function fireBouquet(position) {
