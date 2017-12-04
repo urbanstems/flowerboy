@@ -26,7 +26,7 @@ function preload() {
   game.load.image('flower', 'assets/games/flowerboy/flower.png');
   game.load.spritesheet('house', 'assets/games/flowerboy/house140x140x2.png', 140, 140);
   game.load.image('car', 'assets/games/flowerboy/player.png');
-  game.load.spritesheet('kaboom', 'assets/games/flowerboy/explode.png');
+  game.load.spritesheet('kaboom', 'assets/games/flowerboy/house-blue.png', 140, 140);
   game.load.image('road', 'assets/games/flowerboy/road.png');
 }
 
@@ -44,6 +44,7 @@ function create() {
   flowers.setAll('outOfBoundsKill', true);
   flowers.setAll('checkWorldBounds', true);
 
+  // delete this
   deliveries = game.add.group();
   deliveries.enableBody = true;
   deliveries.physicsBodyType = Phaser.Physics.ARCADE;
@@ -66,7 +67,7 @@ function create() {
   scoreText = game.add.text(10, 10, scoreString + score, { font: '20px Arial', fill: '#fff' });
 
   lives = game.add.group();
-  game.add.text(game.world.width - 100, 10, 'Lives : ', { font: '20px Arial', fill: '#fff' });
+  game.add.text(game.world.width - 100, 10, 'Lives : 3 ', { font: '20px Arial', fill: '#fff' });
 
   stateText = game.add.text(game.world.centerX, game.world.centerY, ' ', { font: '34px Arial', fill: '#fff' });
   stateText.anchor.setTo(0.5, 0.5);
@@ -82,26 +83,23 @@ function create() {
 }
 
 function createHouses() {
-  for (let y = 0; y < 10; y++) {
-    for (let x = 0; x < 2; x++) {
-      const house = houses.create(x * 600, y * 300, 'house');
-      house.anchor.setTo(0.5, 0.5);
-      house.body.moves = false;
-    }
-  }
-
-  houses.x = 100;
-  houses.y = 50;
+  const x = 1;
+  const y = 1;
+  const house = houses.create(x * 600, y * 0, 'house');
+  house.body.moves = false;
 
   game.add.tween(houses).to(
     { y: 800 }, 6000,
     Phaser.Easing.Linear.None, true, 0, 30, false
   );
+  console.log(`X: ${house.body.x}`);
+  console.log(`Y: ${house.body.y}`);
 }
 
 function setupHouse(house) {
-  house.anchorx = 0.5;
+  house.anchor.x = 0.5;
   house.anchor.y = 0.5;
+  house.animations.add('kaboom');
 }
 
 function update() {
@@ -127,7 +125,6 @@ function update() {
     }
 
     game.physics.arcade.overlap(flowers, houses, collisionHandler, null, this);
-    game.physics.arcade.overlap(player, null, this);
   }
 }
 
@@ -136,20 +133,24 @@ function render() {
 }
 
 function collisionHandler(house, flower) {
-  flower.kill();
-  house.kill();
+  let delivery;
 
-  // Possible solution for changing the sprites on collision
-  // game.load.spritesheet('character', 'character.png', 60, 60);
-  // let character = game.add.sprite(0, 0, 'character');character.frame = 0;
-  // Character idle imagecharacter.frame = 1; //Character jump image
+  flower.kill();
+  console.log(`BEFORE KILLED VALUES: + ${house.body.x} , ${house.body.y}`);
+  house.kill();
 
   score += 20;
   scoreText.text = scoreString + score;
 
-  const delivery = deliveries.getFirstExists(false);
+  delivery = deliveries.getFirstExists(false);
+
+  house.body.x = 600;
+  console.log(`X: ${house.body.x}`);
+  console.log(`Y: ${house.body.y}`);
   delivery.reset(house.body.x, house.body.y);
-  delivery.play('kaboom', 30, false, true);
+  console.log(`reset X: ${house.body.x}`);
+  console.log(`reset Y: ${house.body.y}`);
+  delivery.play('kaboom', 10, false, false);
 
   if (houses.countLiving() === 0) {
     score += 1000;
