@@ -124,6 +124,10 @@ function update() {
       fireBouquet('right');
     }
 
+    if (houses.position.y === 800) {
+      houses.position.x = (Math.random() * 600) - 300;
+    }
+
     game.physics.arcade.overlap(flowers, houses, collisionHandler, null, this);
   }
 }
