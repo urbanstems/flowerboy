@@ -64,10 +64,10 @@ function create() {
   game.physics.enable(player, Phaser.Physics.ARCADE);
 
   scoreString = 'Score : ';
-  scoreText = game.add.text(10, 10, scoreString + score, { font: '20px Arial', fill: '#fff' });
+  scoreText = game.add.text(10, 10, scoreString + score, { font: '20px Comic Sans MS', fill: '#fff' });
 
   lives = game.add.group();
-  game.add.text(game.world.width - 100, 10, 'Lives : 3 ', { font: '20px Arial', fill: '#fff' });
+  game.add.text(game.world.width - 100, 10, 'Lives : 3 ', { font: '20px Comic Sans MS', fill: '#fff' });
 
   stateText = game.add.text(game.world.centerX, game.world.centerY, ' ', { font: '34px Arial', fill: '#fff' });
   stateText.anchor.setTo(0.5, 0.5);
@@ -83,8 +83,8 @@ function create() {
 }
 
 function createHouses() {
-  const x = 1;
-  const y = 1;
+  const x = Math.random();
+  const y = Math.random();
   const house = houses.create(x * 600, y * 0, 'house');
   house.body.moves = false;
 
